@@ -1,0 +1,268 @@
+# ==========================================
+# APLIKASI MANAJEMEN KEPEGAWAIAN
+# UTS PEMROGRAMAN BERORIENTASI OBJEK I
+# ==========================================
+
+
+# SUPERCLASS
+class Pegawai:
+    def __init__(self, id_pegawai, nama, umur, jabatan):
+        # Atribut private
+        self.__id_pegawai = id_pegawai
+        self.__nama = nama
+        self.__umur = umur
+        self.__jabatan = jabatan
+
+    # Getter untuk mengambil data private
+    def get_id(self):
+        return self.__id_pegawai
+
+    def get_nama(self):
+        return self.__nama
+
+    def get_umur(self):
+        return self.__umur
+
+    def get_jabatan(self):
+        return self.__jabatan
+
+    # Method untuk mengubah data pegawai
+    def ubah_data(self, nama, umur, jabatan):
+        self.__nama = nama
+        self.__umur = umur
+        self.__jabatan = jabatan
+
+    # Method untuk mengecek status pegawai
+    def cek_status(self):
+        return "Aktif"
+
+    # Method untuk menampilkan data pegawai
+    def tampilkan_data(self):
+        print("ID Pegawai :", self.__id_pegawai)
+        print("Nama       :", self.__nama)
+        print("Umur       :", self.__umur)
+        print("Jabatan    :", self.__jabatan)
+
+
+# SUBCLASS PEGAWAI TETAP
+class PegawaiTetap(Pegawai):
+    def __init__(self, id_pegawai, nama, umur, jabatan,
+                 gaji, tunjangan, masa_kerja):
+        super().__init__(id_pegawai, nama, umur, jabatan)
+
+        self.__gaji = gaji
+        self.__tunjangan = tunjangan
+        self.__masa_kerja = masa_kerja
+
+    def get_gaji(self):
+        return self.__gaji
+
+    def hitung_total_gaji(self):
+        return self.__gaji + self.__tunjangan
+
+    def tampilkan_data(self):
+        super().tampilkan_data()
+        print("Jenis Pegawai : Pegawai Tetap")
+        print("Gaji Pokok    : Rp", self.__gaji)
+        print("Tunjangan     : Rp", self.__tunjangan)
+        print("Masa Kerja    :", self.__masa_kerja, "tahun")
+        print("Total Gaji    : Rp", self.hitung_total_gaji())
+
+
+# SUBCLASS PEGAWAI KONTRAK
+class PegawaiKontrak(Pegawai):
+    def __init__(self, id_pegawai, nama, umur, jabatan,
+                 gaji, durasi, perusahaan):
+        super().__init__(id_pegawai, nama, umur, jabatan)
+
+        self.__gaji = gaji
+        self.__durasi = durasi
+        self.__perusahaan = perusahaan
+
+    def get_gaji(self):
+        return self.__gaji
+
+    def cek_kontrak(self):
+        return self.__durasi
+
+    def tampilkan_data(self):
+        super().tampilkan_data()
+        print("Jenis Pegawai : Pegawai Kontrak")
+        print("Gaji Bulanan  : Rp", self.__gaji)
+        print("Durasi Kontrak:", self.__durasi, "bulan")
+        print("Perusahaan    :", self.__perusahaan)
+
+
+# CLASS ASSOCIATION
+class Departemen:
+    def __init__(self, kode, nama, lokasi):
+        self.__kode = kode
+        self.__nama = nama
+        self.__lokasi = lokasi
+        self.__daftar_pegawai = []
+
+    def get_nama(self):
+        return self.__nama
+
+    # Menambahkan pegawai ke departemen
+    def tambah_pegawai(self, pegawai):
+        self.__daftar_pegawai.append(pegawai)
+
+    # Mencari pegawai berdasarkan ID
+    def cari_pegawai(self, id_pegawai):
+        for pegawai in self.__daftar_pegawai:
+            if pegawai.get_id() == id_pegawai:
+                return pegawai
+        return None
+
+    # Menghapus pegawai
+    def hapus_pegawai(self, id_pegawai):
+        pegawai = self.cari_pegawai(id_pegawai)
+        if pegawai:
+            self.__daftar_pegawai.remove(pegawai)
+            return True
+        return False
+
+    # Menampilkan semua pegawai
+    def tampilkan_semua(self):
+        print("\nKode Departemen :", self.__kode)
+        print("Nama Departemen :", self.__nama)
+        print("Lokasi          :", self.__lokasi)
+
+        if not self.__daftar_pegawai:
+            print("Belum ada data pegawai.")
+            return
+
+        for pegawai in self.__daftar_pegawai:
+            print("\n--------------------------")
+            pegawai.tampilkan_data()
+            print("Status :", pegawai.cek_status())
+
+
+# ==========================================
+# MAIN PROGRAM
+# ==========================================
+
+# Membuat object departemen
+departemen = Departemen("D001", "Teknik Informatika", "Bandung")
+
+
+# Menu utama program
+while True:
+    print("\n================================")
+    print("   APLIKASI MANAJEMEN PEGAWAI")
+    print("================================")
+    print("1. Tambah Data Pegawai")
+    print("2. Tampilkan Data Pegawai")
+    print("3. Cari Data Pegawai")
+    print("4. Ubah Data Pegawai")
+    print("5. Cek Status Pegawai")
+    print("6. Hapus Data Pegawai")
+    print("7. Keluar")
+    print("================================")
+
+    pilihan = input("Pilih menu (1-7): ")
+
+    # MENU 1: TAMBAH DATA
+    if pilihan == "1":
+        print("\nPilih Jenis Pegawai")
+        print("1. Pegawai Tetap")
+        print("2. Pegawai Kontrak")
+
+        jenis = input("Pilihan: ")
+
+        id_pegawai = input("ID Pegawai: ")
+
+        if departemen.cari_pegawai(id_pegawai):
+            print("ID pegawai sudah digunakan!")
+            continue
+
+        nama = input("Nama: ")
+        umur = int(input("Umur: "))
+        jabatan = input("Jabatan: ")
+
+        if jenis == "1":
+            gaji = int(input("Gaji Pokok: Rp"))
+            tunjangan = int(input("Tunjangan: Rp"))
+            masa_kerja = int(input("Masa Kerja (tahun): "))
+
+            pegawai = PegawaiTetap(
+                id_pegawai, nama, umur, jabatan,
+                gaji, tunjangan, masa_kerja
+            )
+
+        elif jenis == "2":
+            gaji = int(input("Gaji Bulanan: Rp"))
+            durasi = int(input("Durasi Kontrak (bulan): "))
+            perusahaan = input("Nama Perusahaan: ")
+
+            pegawai = PegawaiKontrak(
+                id_pegawai, nama, umur, jabatan,
+                gaji, durasi, perusahaan
+            )
+
+        else:
+            print("Jenis pegawai tidak tersedia!")
+            continue
+
+        departemen.tambah_pegawai(pegawai)
+        print("\nData pegawai berhasil ditambahkan!")
+
+    # MENU 2: TAMPILKAN DATA
+    elif pilihan == "2":
+        departemen.tampilkan_semua()
+
+    # MENU 3: CARI DATA
+    elif pilihan == "3":
+        id_pegawai = input("Masukkan ID Pegawai: ")
+        pegawai = departemen.cari_pegawai(id_pegawai)
+
+        if pegawai:
+            print("\nData ditemukan:")
+            pegawai.tampilkan_data()
+        else:
+            print("Data pegawai tidak ditemukan!")
+
+    # MENU 4: UBAH DATA
+    elif pilihan == "4":
+        id_pegawai = input("Masukkan ID Pegawai: ")
+        pegawai = departemen.cari_pegawai(id_pegawai)
+
+        if pegawai:
+            print("\nMasukkan data baru")
+            nama = input("Nama baru: ")
+            umur = int(input("Umur baru: "))
+            jabatan = input("Jabatan baru: ")
+
+            pegawai.ubah_data(nama, umur, jabatan)
+            print("Data berhasil diperbarui!")
+        else:
+            print("Data pegawai tidak ditemukan!")
+
+    # MENU 5: CEK STATUS
+    elif pilihan == "5":
+        id_pegawai = input("Masukkan ID Pegawai: ")
+        pegawai = departemen.cari_pegawai(id_pegawai)
+
+        if pegawai:
+            print("Nama Pegawai :", pegawai.get_nama())
+            print("Status       :", pegawai.cek_status())
+        else:
+            print("Data pegawai tidak ditemukan!")
+
+    # MENU 6: HAPUS DATA
+    elif pilihan == "6":
+        id_pegawai = input("Masukkan ID Pegawai: ")
+
+        if departemen.hapus_pegawai(id_pegawai):
+            print("Data berhasil dihapus!")
+        else:
+            print("Data pegawai tidak ditemukan!")
+
+    # MENU 7: KELUAR
+    elif pilihan == "7":
+        print("\nTerima kasih telah menggunakan program!")
+        break
+
+    else:
+        print("Pilihan tidak valid!")
